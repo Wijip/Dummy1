@@ -1,102 +1,166 @@
-menu_tampil = ("1. Nasi Goreng   Rp, 15.000", "2. Nasi Pecel    Rp, 12.000", "3. Rawon   \t\t Rp, 15.000", "4. Soto Ayam \t Rp, 20.000", "5. Capcay     \t Rp, 25.000","6. Bakso       \t Rp, 15.000",
-                  "7. Gado Gado     Rp, 15.000","8. Tahu Campur   Rp, 25.000", "9. Ayam Bakar  Rp, 20.000", "10. Ayam Geprek   Rp, 30.000")
-menu = ("1. Nasi Goreng","2. Nasi Pecel","3. Rawon","4. Soto Ayam",
-        "5. Capcay","6. Bakso","7. Gado Gado","8. Tahu Campur","9. Ayam Bakar","10. Ayam Geprek")
-harga = (15000,12000,15000,20000,25000,15000,15000,25000,20000,30000)
+import tkinter as tk
+
+menu = {
+    "Nasi Goreng": 15000,
+    "Mie Goreng": 12000,
+    "Ayam Goreng": 18000,
+    "Gado Gado":20000,
+    "Ikan Bakar":35000,
+    "Es Teh": 5000,
+    "Es Jeruk": 7000,
+    "Es Oyen": 15000,
+    "Es Teh Jumbo": 8000,
+}
+
+total_harga = 0
+
 pesanan = []
 
-def tampilan_menu():
-    print("====================================")
-    print("=               Menu               =")
-    print("====================================")
-    for m in menu_tampil:
-        print(m)
-    print("====================================")
+def show_menu():
+    menu_window = tk.Toplevel(root)
+    menu_window.title("Menu")
 
-def pesan_menu(pesanan):
-    while True:
-        tampilan_menu()
-        pilihan = int(input("Silahkan ketikkan nomor menu yang akan dipesan: "))
-        if 1 <= pilihan <= len(menu):
-            porsi = int(input("Berapa porsi yang akan dipesan: "))
-            for po in range(porsi):
-                pesanan.append(pilihan - 1)
-            break
-        else:
-            print("Pilihan tidak valid. Masukkan nomor menu yang sesuai.")
+    menu_title_label = tk.Label(menu_window, text="Daftar Menu")
+    menu_title_label.pack()
 
-def tampilkan_pesanan(pesanan):
-    if pesanan:
-        print("================================")
-        print("Pesanan saat ini")
-        print("================================")
-        for p in pesanan:
-            print(f"{menu[p]} - Rp{harga[p]}")
-        print("================================")
+    for item, harga in menu.items():
+        item_label = tk.Label(menu_window, text=f"{item}: Rp{harga}")
+        item_label.pack()
+
+def add_item():
+    global total_harga
+
+    nama_item = item_entry.get()
+    jumlah = int(jumlah_entry.get())
+
+    if nama_item not in menu:
+        error_label.config(text="Item tidak ditemukan!")
+        return
+
+    pesanan.append((nama_item, jumlah))
+
+    # Menghitung harga total item
+    harga_item = menu[nama_item] * jumlah
+
+    total_harga += harga_item
+
+    total_label.config(text=f"Total: Rp{total_harga}")
+
+    item_entry.delete(0, tk.END)
+    jumlah_entry.delete(0, tk.END)
+
+def hapus_pesanan():
+    global total_harga
+
+    nama_pesanan = nama_entry.get()
+
+    jumlah_dihapus = 0
+
+    for pesanan_item in pesanan[:]:
+        if pesanan_item[0] == nama_pesanan:
+            harga_item = menu[pesanan_item[0]] * pesanan_item[1]
+            total_harga -= harga_item
+
+            pesanan.remove(pesanan_item)
+
+            jumlah_dihapus += pesanan_item[1]
+
+    total_label.config(text=f"Total: Rp{total_harga}")
+
+    if jumlah_dihapus > 0:
+        error_label.config(text=f"{jumlah_dihapus} {nama_pesanan} dihapus dari keranjang.")
     else:
-        print("Belum ada pesanan.")
+        error_label.config(text=f"Tidak ada {nama_pesanan} dalam keranjang.")
 
-def hitung_total(pesanan, harga):
-    jumlah = len(pesanan)
-    total = sum(harga[p] for p in pesanan)
-    return total
+    nama_entry.delete(0, tk.END)
 
-def tampilkan_total(pesanan, harga):
-    if pesanan:
-        total = hitung_total(pesanan, harga)
-        print("================================")
-        print("Menu yang dipesan")
-        print("================================")
-        for p in pesanan:
-            print(f"{menu[p]} - Rp{harga[p]}")
-        print("================================")
-        print(f"Total Harga : Rp.{total}")
-        print("================================")
-    else:
-        print("Belum ada pesanan")
+def finish_transaction():
+    global total_harga
 
-def selesaikan_pesanan(pesanan, harga):
-    if pesanan:
-        total = hitung_total(pesanan, harga)
-        print("================================")
-        print("Menu yang dipesan")
-        print("================================")
-        for p in pesanan:
-            print(f"{menu[p]} - Rp{harga[p]}")
-        print("================================")
-        print(f"Total Harga : Rp.{total}")
-        for i in range(len(pesanan)):
-            del pesanan[0]
-        print("================================")
-    else:
-        print("Belum ada pesanan")
+    if total_harga == 0:
+        error_label.config(text="Keranjang kosong!")
+        return
 
-while True:
-    print("\n===============================")
-    print("=   Program Pesanan Makanan   =")
-    print("===============================")
-    print("1. Tampilkan Menu")
-    print("2. Pesan Menu")
-    print("3. Tampilkan Pesanan")
-    print("4. Hitung Total")
-    print("5. Selesaikan Pesanan")
-    print("6. Keluar")
-    print("=============================")
+    confirmation_message = f"""
+    Total pembayaran: Rp{total_harga}
 
-    pilihan = int(input("Masukkan pilihan Anda: "))
+    Apakah Anda ingin menyelesaikan transaksi? (Y/N)
+    """
+    confirmation_window = tk.Toplevel(root)
+    confirmation_label = tk.Label(confirmation_window, text=confirmation_message)
+    confirmation_label.pack()
 
-    if pilihan == 1:
-        tampilan_menu()
-    elif pilihan == 2:
-        pesan_menu(pesanan)
-    elif pilihan == 3:
-        tampilkan_pesanan(pesanan)
-    elif pilihan == 4:
-        tampilkan_total(pesanan, harga)
-    elif pilihan == 5:
-        selesaikan_pesanan(pesanan, harga)
-    elif pilihan == 6:
-        print("Terima kasih telang menggunakan program ini!")
-        break
-    else:
-        print("Pilihan tidak valid. Masukkan angka yang sesuai")
+    def yes():
+        total_harga = 0
+        total_label.config(text=f"Total: Rp{total_harga}")
+        item_entry.delete(0, tk.END)
+        jumlah_entry.delete(0, tk.END)
+
+        success_label = tk.Label(root, text="Transaksi selesai!")
+        success_label.pack()
+
+        confirmation_window.destroy()
+
+    def no():
+        confirmation_window.destroy()
+
+    yes_button = tk.Button(confirmation_window, text="Ya", command=yes)
+    yes_button.pack()
+    no_button = tk.Button(confirmation_window, text="Tidak", command=no)
+    no_button.pack()
+
+def exit_program():
+    root.destroy()
+
+root = tk.Tk()
+root.geometry('300x400')
+root.title("Kasir Sederhana")
+
+title_label = tk.Label(root, text="Kasir Sederhana")
+title_label.pack()
+
+menu_button = tk.Button(root, text="Tampilkan Menu", command=show_menu)
+menu_button.pack()
+
+item_frame = tk.Frame(root)
+item_frame.pack()
+
+item_label = tk.Label(item_frame, text="Nama Item:")
+item_label.pack()
+item_entry = tk.Entry(item_frame)
+item_entry.pack()
+
+jumlah_label = tk.Label(item_frame, text="Jumlah:")
+jumlah_label.pack()
+
+jumlah_entry = tk.Entry(item_frame)
+jumlah_entry.pack()
+
+add_button = tk.Button(item_frame, text="Tambah", command=add_item)
+add_button.pack()
+
+total_label = tk.Label(root, text=f"Total: Rp{total_harga}")
+total_label.pack()
+
+hapus_frame = tk.Frame(root)
+hapus_frame.pack()
+
+nama_label = tk.Label(hapus_frame, text="Nama Pesanan:")
+nama_label.pack()
+
+nama_entry = tk.Entry(hapus_frame)
+nama_entry.pack()
+
+hapus_button = tk.Button(hapus_frame, text="Hapus Pesanan", command=hapus_pesanan)
+hapus_button.pack()
+
+finish_button = tk.Button(root, text="Selesai", command=finish_transaction)
+finish_button.pack()
+
+error_label = tk.Label(root, text="")
+error_label.pack()
+
+exit_button = tk.Button(root, text="Keluar", command=exit_program)
+exit_button.pack()
+
+root.mainloop()

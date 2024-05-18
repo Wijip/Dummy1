@@ -1,18 +1,17 @@
 import tkinter as tk
 from tkinter import messagebox
 
-# Data menu dan harga
 menu_tampil = (
-    "1. Nasi Goreng   Rp. 15.000",
-    "2. Nasi Pecel    Rp. 12.000",
-    "3. Rawon         Rp. 15.000",
-    "4. Soto Ayam     Rp. 20.000",
-    "5. Capcay        Rp. 25.000",
-    "6. Bakso         Rp. 15.000",
-    "7. Gado Gado     Rp. 15.000",
-    "8. Tahu Campur   Rp. 25.000",
-    "9. Ayam Bakar    Rp. 20.000",
-    "10. Ayam Geprek  Rp. 30.000"
+    "1. Nasi Goreng   \tRp. 15.000",
+    "2. Nasi Pecel    \tRp. 12.000",
+    "3. Rawon         \tRp. 15.000",
+    "4. Soto Ayam     \tRp. 20.000",
+    "5. Capcay        \tRp. 25.000",
+    "6. Bakso         \tRp. 15.000",
+    "7. Gado Gado     \tRp. 15.000",
+    "8. Tahu Campur   \tRp. 25.000",
+    "9. Ayam Bakar    \tRp. 20.000",
+    "10. Ayam Geprek  \tRp. 30.000"
 )
 tampil_pesan = (
     " Nasi Goreng   Rp. 15.000",
@@ -135,7 +134,6 @@ def selesaikan_pesanan():
     else:
         messagebox.showinfo("Info", "Belum ada pesanan.")
 
-# Fungsi untuk keluar dari program
 def keluar_program():
     root.destroy()
 
